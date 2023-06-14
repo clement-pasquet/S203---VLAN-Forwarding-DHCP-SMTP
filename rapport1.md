@@ -18,28 +18,39 @@ Il faut réaliser la configuration statique ci-dessus, autrement dit, mettre un 
 De plus, le DNS devra fournir l'adresse IP de "SMTP".
 
 ## Plan d'adressage
+
+Routeur
+ces addresses ip sur les deux réseaux
+172.20.181.3/24 et sur le réseau de la vlan
+192.168.0.181 sur le réseau LAN
+- Le routeur est configuré avec l'adresse IP 192.168.0.181 sur le réseau LAN et connecté au réseau VLAN_181 avec cette adresse 172.20.181.3/24.
+
 Client
-172.20.181.1/24
+172.20.181.1/24 sur le réseau de vlan_181
+- Le client est configuré avec l'adresse IP 172.20.181.1/24, connecté au réseau VLAN_181(jaune.181).
 
 DHCP
-172.20.181.2/24
+172.20.181.2/24 sur le réseau de vlan_181
+- Le serveur DHCP est configuré avec l'adresse IP 172.20.181.2/24, connecté au réseau VLAN_181.
 
 VLAN_181
-172.20.181.0/24
-
-172.20.181.3/24
-Routeur
-192.168.0.181
+172.20.181.0/24 sur le réseau de vlan_181
+- Le VLAN_181 est configuré avec le réseau 172.20.181.0/24.
 
 LAN
-192.168.0.0/24
+192.168.0.0/24 > sur le réseau de la lan
+- Le réseau LAN est défini comme 192.168.0.0/24.
 
 DNS
-192.168.0.254
+192.168.0.254 > connecté a la lan
+- Le serveur DNS est configuré avec l'adresse IP 192.168.0.254, connecté au réseau LAN.
 
 SMTP
-192.168.0.81
+192.168.0.81 > connecté a la lan
+- Le serveur SMTP est configuré avec l'adresse IP 192.168.0.81 sur le réseau LAN.
 
+### Voici un schéma du plan d'adressage :
+![](./PlanAdressage_.png)
 
 ## Tables de routage
 
@@ -48,13 +59,13 @@ SMTP
 ### **Client**
 | **destination** | **iface** | **gw**       |
 |-----------------|-----------|--------------|
-| 172.20.181.0    | jaune.181 | 172.20.181.1 |
-| 192.168.0.0     | jaune.181 | 172.20.181.3 |
+| 172.20.181.2    | jaune.181 | 172.20.181.1 |
+| 192.168.0.0     | jaune     | 172.20.181.3 |
 
 ### **Routeur**
 | **destination** | **iface** | **gw**        |
 |-----------------|-----------|---------------|
-| 172.20.181.0    | jaune.181 | 172.20.181.1  |
+| 172.20.181.0    | jaune.181 | ------------  |
 | 192.168.0.0     | jaune.181 | 192.168.0.181 |
 
 ### **Smtp**
@@ -124,12 +135,12 @@ modprobe 8021q
 Pour créer un Vlan, qui pourrait être grossièrement définie comme un sous réseau, il faut créer un *Vlan sur l'interface Jaune* .
 Pour ce faire, il faut faire la commande suivante ( uniq. sur Linux ) :
 ```bash
-ip link add link jaune name jaune.181 type vlan id 181
+ip link add link jaune name jaune.181 type vlan id VLAN_181
 ```
 Ps : il faut la faire pour tous les pc sur le vlan
-**Ici**, le nom de ce Vlan sera `jaune.181`, et son id sera `181`, un chiffre spécial à notre groupe.
+**Ici**, le nom de ce Vlan sera `jaune.181`, et son id sera `VLAN_181`, un chiffre spécial à notre groupe.
 
-Il faut ensuite "activer" ces VLAN avec la commande suivante :
+Il faut ensuite "activer" ce VLAN avec la commande suivante :
 ```bash
 ip link set jaune.181 up
 ```
