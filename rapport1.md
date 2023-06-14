@@ -4,12 +4,18 @@
 * GROUPE de TP : 1-2
 * X : 181
 * SECRET : arcturusepsilonscorpii
-* IP_CLIENT : 
-* IP_DHCP : 
-* IP_SMTP : 
-* IPs du ROUTEUR : 
+* IP_CLIENT : 172.20.181.1
+* IP_DHCP : 172.20.181.2
+* IP_SMTP : 192.168.0.81
+* IPs du ROUTEUR : 172.20.181.3 / 192.168.0.81
 
 **Note**: Le document suivant doit rendre compte de votre plan d’adressage (i.e. la description des différents LAN, de leur interconnexion, des machines avec les IP voire @MAC que vous jugerez pertinentes), de vos tables de routage de CLIENT, ROUTEUR, SMTP et celle (supposée) de DNS, des commandes à réaliser sur CLIENT, ROUTEUR, SMTP, et tout ce qui vous semble nécessaire à la configuration de votre réseau.
+
+## But de la Partie 1
+![](./diagramme1.png)
+
+Il faut faire **cette** configuration, autrement dit, mettre un vlan et un lan ensemble via un pc appelé "routeur".
+De plus, le DNS devra fournir l'adresse IP de "SMTP".
 
 ## Plan d'adressage
 
@@ -27,14 +33,20 @@
 
 ## Commandes de configuration
 
-Connaître sa configuration réseau 
+Commande base pour connaître sa configuration réseau :
 
-    ip a 
+```javascript
+ip a 
+```
 
-1er étape trouver que les interfaces sont à UP.
-manip pour pas que cela saute:
-sudo nano /etc/network/interfaces
-'''
+La première chose à faire, est de reglé le fichier qui gère les interfaces pour éviter que les adresses IP "sautent" :
+
+Il faut faire la commande suivante :
+
+```sudo nano /etc/network/interfaces```
+
+Et dans la page qui s'affichera, il faudra modifier les interfaces généralements nommés enosp1 et enosp2 par *Bleue et Jaune* comme dans l'exemple ci dessous :
+```
 auto lo
 iface lo inet loopback
 
@@ -46,21 +58,39 @@ iface bleue inet manual
 
 allow-hotplug jaune
 iface jaune inet manual
-'''
+```
 
+Également, pour que le changement soit effective, il faut rédémarrer les systèmes en causes pour résoudre le problème :
+```bash
 systemctl restart networking
 systemctl restart network-manager
-Pour redemarrer le système.
+```
 
-pour mettre en place le VLAN 181 entre client, dhcp et routeur
-la commande ci dessous sers à pouvoir utiliser l'interface jaune.
+
+## Étape 1 : Le Vlan
+
+Pour pouvoir mettre en place le VLAN entre CLIENT, DHCP et ROUTEUR, il faut déjà vérifier que les interfaces en questions soit bien utilisables avec :
+```bash
 sudo ip link set jaune up
+```
+**Pour chaque PC**, cela permet de "mettre UP", c'est à dire d'activer, les interfaces jaune des différents PC.
 
+<br></br>
+
+Aussi, il est nécessaire dans le lancer **8021q**, un module du noyau Linux qui prend en charge les VLAN. 
+Pour faire cela, nous utilisons la commande suivante :
+```bash
 modprobe 8021q
-sers a lancer le service a propos du service internet 8021q.
+```
 
-ip link add link jaune name jaune.181 type vlan id 181
-sers a créer un sous-réseau d'une interface.
+### Créer le Vlan :
+Pour créer un Vlan, qui pourrait être grossièrement définie comme un sous réseau, il faut créer un *Vlan sur l'interface Jaune* .
+Pour ce faire, il faut faire la commande suivante ( uniq. sur Linux ) :
+```bash
+    ip link add link jaune name jaune.181 type vlan id 181
+```
+**Ici**, le nom de ce Vlan sera `jaune.181`, et son id sera `181`, un chiffre spécial à notre groupe.
+
 
 Nous avons créer les addresses ip de chaque machines le client qui finis par .1,  addresse ip du DHCP.
 ip client
