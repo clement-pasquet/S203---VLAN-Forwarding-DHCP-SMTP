@@ -24,7 +24,7 @@ De plus, le DNS devra fournir l'adresse IP de "SMTP".
 
 **Note**: il existe des générateurs de tables MDhttps://www.tablesgenerator.com/markdown_tables
 
-| **destination** | **iface** | **gw** |
+| **destination** | **iface** | **gw** | 
 |-----------------|-----------|--------|
 |                 |           |        |
 |                 |           |        |
@@ -89,21 +89,34 @@ Pour ce faire, il faut faire la commande suivante ( uniq. sur Linux ) :
 ```bash
     ip link add link jaune name jaune.181 type vlan id 181
 ```
+Ps : il faut la faire pour tous les pc sur le vlan
 **Ici**, le nom de ce Vlan sera `jaune.181`, et son id sera `181`, un chiffre spécial à notre groupe.
 
+Ensuite, nous devons créer les ip's pour chaque machines dans le réseau :
 
-Nous avons créer les addresses ip de chaque machines le client qui finis par .1,  addresse ip du DHCP.
-ip client
+<details>
+<summary>IP du CLIENT ( cliquez pour dérouler )</summary>
 ip a add 172.20.181.1/24 dev jaune.181
-
-ip dhcp
-ip a add 172.20.181.2/24 dev jaune.181
-
-ip routeur
+</details>
+<details>
+<summary>IP de DHCP ( cliquez pour dérouler )</summary>
+ip a add 172.20.181.2/24 dev jaune.181 
+</details>
+<details>
+<summary>IP de ROUTEUR ( cliquez pour dérouler )</summary>
 ip a add 172.20.181.3/24 dev jaune.181
+</details>
 
-Début Lan routeur
-ip a addr 192.168.0.181
+<br></br>
+
+Aussi, le routeur possédant 2 ip, l'une dans le Vlan et l'autre dans le future lan, nous devons lui attribuer une ip pour le lan :
+```bash
+ip a add 192.168.0.181/24 dev jaune
+```
+
+Une fois que nous avons crées les 2 ip de ROUTEUR, il faut attribuer une adresse IP à SMTP, en effet, il est écrit qu'il faut que son adresse ip ( celle de SMTP ) soit donné grâce au DNS.
+Pour faire cela, nous allons interroger le DNS.
+Pour rappel, le rôle d'un DNS est de "relier" les liens internet ( google.com ... smtp181.mail181.com ... ) et les adresses ip des serveurs d'Internet.
 
 commande pour interroger le dns à partir du routeur afin d'avoir l'@ ip de smtp :
 nslookup smtp181.mail181.com addressIpDNS
