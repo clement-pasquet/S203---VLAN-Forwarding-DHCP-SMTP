@@ -51,19 +51,19 @@ SMTP
 | 172.20.181.0    | jaune.181 | 172.20.181.1 |
 | 192.168.0.0     | jaune.181 | 172.20.181.3 |
 
-## **Routeur**
+### **Routeur**
 | **destination** | **iface** | **gw**        |
 |-----------------|-----------|---------------|
 | 172.20.181.0    | jaune.181 | 172.20.181.1  |
 | 192.168.0.0     | jaune.181 | 192.168.0.181 |
 
-## **Smtp**
+### **Smtp**
 | **destination** | **iface** | **gw**        |
 |-----------------|-----------|---------------|
 | 172.20.181.0    | jaune.181 | 192.168.0.181 |
 | 192.168.0.0     | jaune.181 | 192.168.0.81  |
 
-## **Dhcp**
+### **Dhcp**
 | **destination** | **iface** | **gw**       |
 |-----------------|-----------|--------------|
 | 172.20.181.0    | jaune.181 | 172.20.181.2 |
@@ -230,7 +230,57 @@ Puis finalement, il faut créer ce 'log' grâce à ce fichier, et mettre ce qu'i
 ./log > SMTP.log
 ```
 
-plan d'addressage
-Client 
+## Analyse capture de trames - VLAN
+![](./vlan.jpg)
+
+Ici nous allons analyser le flux entre deux machines du même VLAN, CLIENT et DHCP.
+
+En premier, le client cherche l'adresse MAC du DHCP grâce au protocole `ARP`.
+
+Le DHCP répond lui même à la requête en donnant sa propre adresse MAC.
+
+Ensuite nous pouvons voir un échange de requête ICMP, un protocole de diagnostic réseau.
+
+A la fin de chaque trame, nous pouvons voir que le temps total nécessaire pour répondre à une requête est supérieur au temps total nécessaire pour juste envoyer une requête.
+
+C'est assez normal, puisque le temps est calculé en additionnant les temsp précédants.
+
+La requête `MDNS` est utilisé pour la résolution local de nom de domaine sans DNS propre. Cependant, la raison de sa présence ici n'est pas claire.
+
+A la fin, DHCP fait une requête ARP à CLIENT.
+
+C'est peut être pour pouvoir mettre à jour sa table de cache ARP, et ainsi vérifier que 172.20.181.2 a bien l'adresse Mac qu'il avait enregistré.
+
+## Analyse capture de trames - DNS
+![](./dns.jpg)
+
+Ici, nous devons observer le flux de client qui "demandera" une addresse ip pour son domaine "smtp181.mail181.com", et qui devra donc passer par le routeur pour demander au DNS.
+
+Nous avons 2 questions et 2 réponses.
+
+Le client sachant directement l'adresse du DNS, il n'a pas besoin de faire une requête ARP pour la savoir.
+
+Premièrement, il va demander quelle adresse IP pour `smtp181.mail181.com`.
+
+Le DNS lui répondrera un autre nom de domaine : `machine181.mail181.com`.
+
+Le client lui demandera donc qu'elle est l'adresse IP associé à ce nom de domaine : ce sera `192.168.0.81`.
+
+A noter que dès la première requête, le serveur DNS donne aussi l'adresse IP correspondante, il est donc possible que CLIENT utilise l'adresse IP donné par la première requête.
+
+Nous pouvons aussi remarquer que le DNS redonne au CLIENT l'adresse IP du DNS a utiliser. Ici c'est lui-même mais dans d'autres cas ca aurait pu être quelqu'un d'autre.
+
+## Analyse capture de trames - routage
+![](./routage.jpg)
+
+Ici, nous partons sur des requêtes similaires à la capture de trame du Vlan.
+
+Cela commence directement par une requête ICMP depuis CLIENT vers SMTP.
+
+Il y a 5 requêtes, à chaque fois avec leur réponse, donc il y a **10 lignes**.
+
+Ensuite, une fois que les 5 ping sont finies, les 2 pc remettent supposemment à jour leur table de cache ARP, comme pour "vérifier" que leur table de routage est bien à jour.
+
+Puis, ca recommence mais dans l'autre sens, cette fois ci SMTP va pinger *5 fois* CLIENT.
 
 
