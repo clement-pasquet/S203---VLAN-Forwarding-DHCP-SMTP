@@ -7,7 +7,7 @@
 * IP_CLIENT : 172.20.181.1
 * IP_DHCP : 172.20.181.2
 * IP_SMTP : 192.168.0.81
-* IPs du ROUTEUR : 172.20.181.3 / 192.168.0.81
+* IPs du ROUTEUR : 172.20.181.3 / 192.168.0.181
 
 **Note**: Le document suivant doit rendre compte de votre plan d’adressage (i.e. la description des différents LAN, de leur interconnexion, des machines avec les IP voire @MAC que vous jugerez pertinentes), de vos tables de routage de CLIENT, ROUTEUR, SMTP et celle (supposée) de DNS, des commandes à réaliser sur CLIENT, ROUTEUR, SMTP, et tout ce qui vous semble nécessaire à la configuration de votre réseau.
 
@@ -136,7 +136,7 @@ modprobe 8021q
 Pour créer un Vlan, qui pourrait être grossièrement définie comme un sous réseau, il faut créer un *Vlan sur l'interface Jaune* .
 Pour ce faire, il faut faire la commande suivante ( uniq. sur Linux ) :
 ```bash
-ip link add link jaune name jaune.181 type vlan id VLAN_181
+ip link add link jaune name jaune.181 type vlan id 181
 ```
 Ps : il faut la faire pour tous les pc sur le vlan
 **Ici**, le nom de ce Vlan sera `jaune.181`, et son id sera `VLAN_181`, un chiffre spécial à notre groupe.
