@@ -102,6 +102,19 @@ ip a add 172.20.181.2/24 dev jaune.181
 <br></br>
 
 
+### Mettre en place le forwarding
+Cependant, pour que les PC du VLAN puissent accéder aux PC du LAN, il faut configurer le "forwarding" sur le routeur.
+
+Pour faire cela, il faut éditer le fichier `/etc/sysctl.conf` et **décommenter** la ligne suivante :
+
+> `net.ipv4.ip_forward=1`
+
+Ensuite, il faut redémarrer le service réseau pour que le changement soit effectué :
+```bash
+sysctl -p
+```
+
+
 
 
 ## Partie 1 : Mise en place du DHCP

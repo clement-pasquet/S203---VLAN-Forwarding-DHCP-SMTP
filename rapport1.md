@@ -101,7 +101,7 @@ iface lo inet loopback
 
 allow-hotplug eno1
 iface eno1 inet manual
-ip
+
 allow-hotplug bleue
 iface bleue inet manual
 
@@ -199,9 +199,9 @@ Une fois que le DNS nous a donné une adresse IP, il faut attribuer cette adress
 
 Pour faire cela il faut tout naturellement lui rajouter cette adresse ip avec la commande suivante : 
 ```bash
-ip a addr 192.168.0.81/24 dev jaune
+ip a add 192.168.0.81/24 dev jaune
 ```
-
+### Mettre en place le Forwarding
 Cependant, pour que les PC du VLAN puissent accéder aux PC du LAN, il faut configurer le "forwarding" sur le routeur.
 
 Pour faire cela, il faut éditer le fichier `/etc/sysctl.conf` et **décommenter** la ligne suivante :
