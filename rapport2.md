@@ -189,6 +189,6 @@ En effet, le principe d'une requête MDNS est en gros, de demander aux autres ma
 
 Ca à l'air d'être la même chose pour le paquet suivant qui est du protocole **LLMNR**, qui permet en gros, de résoudre un nom d'hôte précis en demandant au réseau local ( ici, le nom d'hôte à résoudre est "debian5" ).
 
-Cette enchaine de paquets se déroule plusieurs fois mais fFinalement, au paquet 12, le serveur DNS répond.
+Cette enchainement de paquets se déroule plusieurs fois mais finalement, au paquet 12, le serveur DNS répond.
 
 Cependant, il doit surement manquer des informations car DHCP renvoie une demande au DNS juste après.
